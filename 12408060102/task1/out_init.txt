@@ -1,0 +1,5 @@
+[init] 数据库：exam_12408060102  集合：courses
+[init] 已写入 3 门课程：
+       COURSE-12408060102-01        NoSQL数据库 张老师          OPEN   章节数=2
+       COURSE-12408060102-02        数据库原理    张老师          CLOSED 章节数=1
+       COURSE-12408060102-03        机器学习     李老师          OPEN   章节数=2

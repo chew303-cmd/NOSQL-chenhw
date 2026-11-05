@@ -1,0 +1,44 @@
+
+== 1. 查询：teacher=张老师 且 status=OPEN 的课程 =============================
+课程编号                  课程名称      章节数量
+--------------------------------------------------
+COURSE-12408060102-01     NoSQL数据库   2
+命中 1 门课程
+
+== 2. 修改 COURSE-12408060102-01 中 CH02 的标题为 Redis基础与应用-2 ==========
+update_one -> acknowledged=True matchedCount=1 modifiedCount=1
+更新后的课程文档：
+{
+  "_id": "COURSE-12408060102-01",
+  "title": "NoSQL数据库",
+  "teacher": "张老师",
+  "status": "OPEN",
+  "chapters": [
+    {
+      "chapterId": "CH01",
+      "title": "MongoDB基础",
+      "hours": 2
+    },
+    {
+      "chapterId": "CH02",
+      "title": "Redis基础与应用-2",
+      "hours": 2
+    }
+  ]
+}
+
+== 3. 新增 CH03（hours = 2 + A = 4），连续执行两次 ===========================
+第 1 次 update_one -> matchedCount=1 modifiedCount=1
+第 2 次 update_one -> matchedCount=0 modifiedCount=0
+
+== 4. 核验 ===================================================================
+(1) 修改后 CH02 的标题      ：Redis基础与应用-2
+(2) 两次新增后 CH03 的数量  ：1
+(3) 最终章节总数            ：3（CH01、CH02、CH03）
+(4) teacher=张老师，status=OPEN → 是否保持原值：是
+
+说明：本题每一步只改动 chapters 数组中命中的那一个元素（$set 配合位置操作符 $），
+      或只追加一个元素（$push 配合 chapterId $ne CH03 的条件），其余字段与其他章节
+      在服务端原样保留。若改为“读整个文档 → 客户端改 → 整文档 replaceOne”，
+      并发时两次读到的都是旧文档，后写者会覆盖前者的修改（丢失更新），
+      而章节数组一旦变长，每次都要整段传输，代价也远高于局部更新。
